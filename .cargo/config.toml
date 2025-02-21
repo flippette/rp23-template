@@ -1,0 +1,37 @@
+[unstable]
+build-std = ["core", "panic_abort"]
+build-std-features = ["optimize_for_size"]
+
+[build]
+target = "thumbv8m.main-none-eabihf"
+
+[target.thumbv8m.main-none-eabihf]
+linker = "flip-link"
+runner = [
+  "probe-rs",
+  "run",
+  "--chip",
+  "rp235x",
+  "--speed",
+  "64000",
+  "--log-format",
+  "{t:>10:dimmed} {c:>15:dimmed} {L:>5:bold} {s}",
+]
+rustflags = [
+  "-Ctarget-cpu=cortex-m33",
+  "-Clink-arg=--nmagic",
+  "-Clink-arg=-Tdefmt.x",
+  "-Clink-arg=-Tlink.x",
+]
+
+[env]
+DEFMT_LOG = "info"
+DEFMT_RTT_BUFFER_SIZE = "4096"
+
+[profile.release]
+opt-level = "z"
+codegen-units = 1
+panic = "abort"
+strip = false
+debug = 2
+lto = true
